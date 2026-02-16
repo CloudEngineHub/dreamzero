@@ -84,7 +84,7 @@ torchrun --nproc_per_node $NUM_GPUS --standalone groot/vla/experiment/experiment
     image_resolution_height=176 \
     save_lora_only=true \
     max_chunk_size=4 \
-    frame_seqlen=440 \
+    frame_seqlen=880 \
     save_strategy=no \
     droid_data_root=$DROID_DATA_ROOT \
     dit_version=$WAN_CKPT_DIR \
