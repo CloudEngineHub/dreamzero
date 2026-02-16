@@ -53,13 +53,14 @@ fi
 
 torchrun --nproc_per_node $NUM_GPUS --standalone groot/vla/experiment/experiment.py \
     report_to=none \
-    data=dreamzero/droid_horizon_relative \
+    data=dreamzero/droid_relative \
     wandb_project=dreamzero \
+    train_architecture=lora \
     num_frames=33 \
     action_horizon=24 \
     num_views=3 \
     model=dreamzero/vla \
-    model/dreamzero/action_head=wan_flow_matching_action_tf_efficient_weighted \
+    model/dreamzero/action_head=wan_flow_matching_action_tf \
     model/dreamzero/transform=dreamzero_cotrain \
     num_frame_per_block=2 \
     num_action_per_block=24 \

@@ -30,8 +30,6 @@ class VLATrainer(BaseTrainer):
         self.all_times = []
         self.start_time = time.time()
         self.restart_max_seconds = kwargs.pop("restart_max_seconds", 0)
-        print(f"restart_max_seconds: {self.restart_max_seconds}")
-
         import torch.distributed as dist
 
         self.rank = dist.get_rank()
@@ -42,7 +40,6 @@ class VLATrainer(BaseTrainer):
 
     def training_step(self, model, inputs, *args, **kwargs):
         self.micro_global_step += 1
-        print(f"[RANK {self.rank} HEARTBEAT] Start training micro step {self.micro_global_step}")
 
         if hasattr(self.model.action_head, "global_step"):
             self.model.action_head.global_step = self.state.global_step
@@ -51,26 +48,17 @@ class VLATrainer(BaseTrainer):
             if self.state.global_step % 100 == 0:
                 if self.step_timer is not None:
                     elapsed_time = time.time() - self.step_timer
-                    print(f"Time for 100 steps: {elapsed_time:.2f} seconds")
                     self.all_times.append(elapsed_time)
                     self.curr_trial += 1
-                self.step_timer = time.time()  # Reset the timer
+                self.step_timer = time.time()
             if self.curr_trial >= self.num_trials:
-                print(
-                    f"Average time for 100 steps in {self.num_trials} trials: {np.mean(self.all_times):.2f} seconds"
-                )
-                print(
-                    f"Average time for 100 steps in last {int(self.num_trials / 2)} trials: {np.mean(self.all_times[-int(self.num_trials / 2):]):.2f} seconds"
-                )
                 exit(0)
         if self.state.global_step % self.state.save_steps == 1:
-            # just finished saving a checkpoint
             if self.restart_max_seconds > 0:
                 cur_time = time.time()
                 if (cur_time - self.start_time) > self.restart_max_seconds:
                     raise ForceRestart(f"Exceeded time limit {self.restart_max_seconds} seconds")
         loss_dict = super().training_step(model, inputs, *args, **kwargs)
-        print(f"[RANK {self.rank} HEARTBEAT] End training micro step {self.micro_global_step}")
         return loss_dict
 
 
@@ -82,7 +70,6 @@ class VLATrainerInferenceBenchmark(VLATrainer):
         measure_steps = 100
 
         model.eval()
-        print("shapes", "ids", inputs["input_ids"].shape, "pixels", inputs["pixel_values"].shape)
 
         with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
             with torch.inference_mode():
@@ -106,7 +93,6 @@ class VLATrainerInferenceBenchmark(VLATrainer):
         elapsed_time = start_event.elapsed_time(end_event)
 
         time_per_step = elapsed_time / measure_steps
-        print("Time per step: {:.2f} ms".format(time_per_step))
         exit()
 
 

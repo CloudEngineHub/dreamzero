@@ -149,23 +149,14 @@ transform_oxe_droid:
       normalization_modes:
         state.joint_position: q99
         state.gripper_position: q99
-
+  
     # Action transforms
     - _target_: groot.vla.data.transform.StateActionToTensor
       apply_to: ${modality_config_oxe_droid.action.modality_keys}
-
-    # Per-horizon normalization for joint_position only
-    - _target_: groot.vla.data.transform.PerHorizonActionTransform
-      apply_to:
-        - action.joint_position
+    - _target_: groot.vla.data.transform.StateActionTransform
+      apply_to: ${modality_config_oxe_droid.action.modality_keys}
       normalization_modes:
         action.joint_position: q99
-
-    # Regular normalization for gripper_position
-    - _target_: groot.vla.data.transform.StateActionTransform
-      apply_to:
-        - action.gripper_position
-      normalization_modes:
         action.gripper_position: q99
 
     # ConcatTransform

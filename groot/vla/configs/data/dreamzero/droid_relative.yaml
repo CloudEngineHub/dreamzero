@@ -1,13 +1,13 @@
 # @package _global_
 
 defaults:
-  - dreamzero/base_48_wan_fine_aug_horizon_relative
+  - dreamzero/base_48_wan_fine_aug_relative
   - _self_ # this file will override the base
 
 max_state_dim: 64
 use_global_metadata: false
-relative_action: false
-relative_action_per_horizon: true
+relative_action: true
+relative_action_per_horizon: false
 relative_action_keys:
   - joint_position
 max_chunk_size: 5

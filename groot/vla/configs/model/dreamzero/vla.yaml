@@ -3,7 +3,7 @@
 defaults:
   - _self_  # all below configs will override this file
   - /model/dreamzero/backbone: identity
-  - /model/dreamzero/action_head: wan_flow_matching_action_tf_efficient_weighted
+  - /model/dreamzero/action_head: wan_flow_matching_action_tf
   - /model/dreamzero/transform: dreamzero_cotrain
 
 model:
